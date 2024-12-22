@@ -1,0 +1,12 @@
+# .gitignore
+
+# Python-specific
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+.env
+
+# Credentials
+*.json
