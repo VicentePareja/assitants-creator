@@ -3,7 +3,8 @@ from dotenv import load_dotenv
 from src.file_importer import GoogleDocReader
 from src.text_separator import TextSeparator
 from src.assistant_creator.assitant_creator import AssistantCreator
-from parametros import INSTRUCTIONS_PATH, TEXT_WITHOUT_EXAMPLES_PATH, EXAMPLES_PATH
+from src.assitant_finetuner.examples_to_jsonl import TxtToJsonlConverter
+from parametros import INSTRUCTIONS_PATH, TEXT_WITHOUT_EXAMPLES_PATH, EXAMPLES_PATH, JSONL_EXAMPLES_PATH
 
 class DocumentImporter:
     def __init__(self, service_account_path: str, document_id: str, instructions_path: str):
@@ -36,6 +37,8 @@ class Main:
         self.base_instructions_path = INSTRUCTIONS_PATH
         self.intructions_without_examples_path = TEXT_WITHOUT_EXAMPLES_PATH
         self.examples_path = EXAMPLES_PATH
+        self.jsonl_examples_path = JSONL_EXAMPLES_PATH
+        self.promt_path = TEXT_WITHOUT_EXAMPLES_PATH
 
         self.openai_api_key = os.getenv('OPENAI_API_KEY')
         self.assistant_id = os.getenv('ID_ASSISTANT_TEXT_SEPARATOR')
@@ -53,6 +56,15 @@ class Main:
             assistant_id=self.assistant_id
         )
         separator_runner.run()
+
+    def create_jsonl_for_finetuning(self):
+        txt_to_jsonl_converter = TxtToJsonlConverter(
+            input_examples_txt_path=self.examples_path,
+            input_prompt_txt=self.promt_path,
+            output_jsonl_path=self.jsonl_examples_path
+        )
+        txt_to_jsonl_converter.convert()
+
 
     def create_without_examples_assistant(self):
         assistant_creator = AssistantCreator(
@@ -80,8 +92,9 @@ class Main:
 
     def run(self):
         #self.import_text_from_google_doc()
-        self.create_without_examples_assistant()
-        self.create_base_assistant()
+        #self.create_without_examples_assistant()
+        #self.create_base_assistant()
+        self.create_jsonl_for_finetuning()
 
 if __name__ == "__main__":
     main_app = Main()
