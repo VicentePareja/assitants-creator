@@ -1,41 +1,46 @@
 # Assistants Creator
 
-This project is designed to automatically create assistants for various tasks.
-
-## Table of Contents
-- [Introduction](#introduction)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Introduction
-The Assistants Creator project aims to simplify the process of creating assistants by automating the setup and configuration.
+This project aims to automate the creation of assistants. It provides tools and scripts to streamline the process of generating assistant applications.
 
 ## Features
-- Automatic assistant creation
+
+- Automated assistant creation
 - Customizable templates
-- Easy to use interface
+- Easy integration with existing projects
+- Support for multiple platforms
 
 ## Installation
-To install the project, clone the repository and install the necessary dependencies:
+
+To install the necessary dependencies, run:
+
 ```bash
-git clone https://github.com/yourusername/assistants-creator.git
-cd assistants-creator
 npm install
 ```
 
 ## Usage
-To create a new assistant, run the following command:
+
+To create a new assistant, use the following command:
+
 ```bash
-npm run create-assistant
+npm run create-assistant --name <AssistantName>
 ```
-Follow the on-screen instructions to customize your assistant.
+
+Replace `<AssistantName>` with the desired name of your assistant.
+
+## Configuration
+
+You can customize the assistant templates by modifying the files in the `templates` directory. Refer to the documentation for detailed configuration options.
 
 ## Contributing
-Contributions are welcome! Please fork the repository and create a pull request with your changes.
+
+We welcome contributions! Please read our [contributing guidelines](CONTRIBUTING.md) for more information.
 
 ## License
+
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For any questions or feedback, please contact Vicente Pareja at vicente.pareja@example.com.
+
 
