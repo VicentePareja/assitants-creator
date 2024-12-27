@@ -1,49 +1,41 @@
-# README
+# Assistants Creator
 
-## Google Docs Text Fetcher
+This project is designed to automatically create assistants for various tasks.
 
-This project fetches text from a Google Doc using the Google Docs API. It is structured to use a `parametros.py` file for configuration.
+## Table of Contents
+- [Introduction](#introduction)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
-### Prerequisites
+## Introduction
+The Assistants Creator project aims to simplify the process of creating assistants by automating the setup and configuration.
 
-1. **Python**: Ensure Python 3.7 or higher is installed.
-2. **Google Cloud Project**:
-   - Enable the **Google Docs API** and **Google Drive API**.
-   - Create a service account and download its JSON credentials file.
-   - Share the Google Doc with the service account email to grant access.
-3. **Install dependencies**:
-   ```bash
-   pip install google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib
-   ```
+## Features
+- Automatic assistant creation
+- Customizable templates
+- Easy to use interface
 
-### Files
+## Installation
+To install the project, clone the repository and install the necessary dependencies:
+```bash
+git clone https://github.com/yourusername/assistants-creator.git
+cd assistants-creator
+npm install
+```
 
-1. **`fetch_google_doc.py`**:
-   - Main script that fetches and prints the content of a Google Doc.
-2. **`parametros.py`**:
-   - Configuration file that contains:
-     - Path to the service account JSON file.
-     - Google Doc ID.
-3. **`README.md`**:
-   - Documentation for setting up and running the project.
+## Usage
+To create a new assistant, run the following command:
+```bash
+npm run create-assistant
+```
+Follow the on-screen instructions to customize your assistant.
 
-### Usage
+## Contributing
+Contributions are welcome! Please fork the repository and create a pull request with your changes.
 
-1. Replace the placeholders in `parametros.py`:
-   - `path_to_your_service_account.json`: Path to your service account JSON file.
-   - `DOCUMENT_ID`: The ID of your Google Doc (from the URL).
-
-2. Run the script:
-   ```bash
-   python fetch_google_doc.py
-   ```
-
-### Output
-
-The script prints the content of the specified Google Doc to the console.
-
-### Notes
-
-- Ensure the Google Doc is shared with the service account email.
-- Do not expose your service account JSON file publicly for security reasons.
+## License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 

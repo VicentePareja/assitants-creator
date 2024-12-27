@@ -4,7 +4,10 @@ from src.file_importer import GoogleDocReader
 from src.text_separator import TextSeparator
 from src.assistant_creator.assitant_creator import AssistantCreator
 from src.assitant_finetuner.examples_to_jsonl import TxtToJsonlConverter
-from parametros import INSTRUCTIONS_PATH, TEXT_WITHOUT_EXAMPLES_PATH, EXAMPLES_PATH, JSONL_EXAMPLES_PATH
+from src.assitant_finetuner.create_finetune_model import OpenAIFineTuner
+from src.assitant_finetuner.upload_jsonl import OpenAIFileUploader
+from parametros import (INSTRUCTIONS_PATH, TEXT_WITHOUT_EXAMPLES_PATH, EXAMPLES_PATH,
+                        JSONL_EXAMPLES_PATH, NAME, BASE_MODEL)
 
 class DocumentImporter:
     def __init__(self, service_account_path: str, document_id: str, instructions_path: str):
@@ -34,6 +37,7 @@ class Main:
 
         self.service_account_path = os.getenv("SERVICE_ACCOUNT_FILE")
         self.document_id = os.getenv("DOCUMENT_ID")
+        self.name = NAME
         self.base_instructions_path = INSTRUCTIONS_PATH
         self.intructions_without_examples_path = TEXT_WITHOUT_EXAMPLES_PATH
         self.examples_path = EXAMPLES_PATH
@@ -43,11 +47,13 @@ class Main:
         self.openai_api_key = os.getenv('OPENAI_API_KEY')
         self.assistant_id = os.getenv('ID_ASSISTANT_TEXT_SEPARATOR')
 
+        self.fine_tuner = OpenAIFineTuner(api_key=self.openai_api_key)
+
     def import_text_from_google_doc(self):
         importer = DocumentImporter(
             self.service_account_path,
             self.document_id,
-            self.instructions_path
+            self.base_instructions_path
         )
         importer.import_text()
 
@@ -73,7 +79,7 @@ class Main:
         )
         assistant = assistant_creator.create_assistant(
             name_suffix=" without examples",
-            model="gpt-4o",
+            model=BASE_MODEL,
             tools=[{"type": "code_interpreter"}]
         )
         print(f"Assistant without examples created")
@@ -85,16 +91,56 @@ class Main:
         )
         assistant = assistant_creator.create_assistant(
             name_suffix=" base",
-            model="gpt-4o",
+            model=BASE_MODEL,
             tools=[{"type": "code_interpreter"}]
         )
         print(f"Base assistant created")
 
-    def run(self):
-        #self.import_text_from_google_doc()
-        #self.create_without_examples_assistant()
-        #self.create_base_assistant()
+
+    def upload_jsonl_to_openai(self):
+        uploader = OpenAIFileUploader(api_key=self.openai_api_key)
+        response = uploader.upload_file(
+            file_path=self.jsonl_examples_path,
+            purpose="fine-tune"
+        )
+        print("Jsonl file uploaded successfully!")
+        self.fine_tune_file_id = response.id
+
+    def create_fine_tune_model(self):
+        response = self.fine_tuner.create_fine_tuning_job(
+            training_file_id=self.fine_tune_file_id,
+            model=BASE_MODEL,
+            suffix=f"{NAME}fine-tuned"
+        )
+        fine_tune_job_id = response.id
+        self.fine_tune_model = self.fine_tuner.monitor_fine_tuning_job(fine_tune_job_id)
+
+    def create_fine_tune_assistant(self):
+        assistant_creator = AssistantCreator(
+            api_key=self.openai_api_key,
+            instructions_path=self.intructions_without_examples_path
+        )
+        assistant = assistant_creator.create_assistant(
+            name_suffix=" fine-tuned",
+            model=self.fine_tune_model,
+            tools=[{"type": "code_interpreter"}]
+        )
+        print(f"Fine-tuned assistant created")
+
+    def create_fine_tune_assitant_without_examples(self):
         self.create_jsonl_for_finetuning()
+        self.upload_jsonl_to_openai()
+        self.create_fine_tune_model()
+        self.create_fine_tune_assistant()
+
+    def run(self):
+        self.import_text_from_google_doc()
+        self.create_without_examples_assistant()
+        self.create_base_assistant()
+        self.create_fine_tune_assitant_without_examples()
+    """ self.eval_models()
+        self.create_and_send_final_report()"""
+
 
 if __name__ == "__main__":
     main_app = Main()
