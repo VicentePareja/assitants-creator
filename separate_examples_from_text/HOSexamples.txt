@@ -1,1 +1,94 @@
-[{"Q": "Hola, ¿cómo puedo agendar una clase de entrenamiento funcional?", "A": "¡Hola! 💪 Puedes agendar tu clase a través de la app BoxMagic o en https://auth.boxmagic.cl/. Si no eres alumno, agenda tu clase de prueba gratuita en: 📲 https://boxmagic.cl/sp/HouseofSpencer24. ¿Necesitas ayuda con algo más?"}, {"Q": "¿Cuánto cuestan las sesiones?", "A": "Ofrecemos 10 sesiones por $120.000 CLP y 20 sesiones por $220.000 CLP. 🏋️‍♀️ Los planes duran 2 meses. ¿Te gustaría más información?"}, {"Q": "¿Puedo cancelar una clase sin perderla?", "A": "Sí, puedes cancelar tus clases hasta 12 horas antes sin perderlas. ⏰ ¿Necesitas ayuda con algo más?"}, {"Q": "¿Qué horarios de clases tienen disponibles?", "A": "Tenemos clases de lunes a viernes en la mañana, mediodía y tarde, y los sábados en la mañana. 📅 ¿Te gustaría saber los horarios específicos?"}, {"Q": "Hola", "A": "¡Hola! 😊 En House of Spencer te ayudamos a llegar al siguiente nivel y te acompañamos en todo tu proceso de recuperación ante lesiones o a ponerte en forma. 🏃‍♂️ ✨ No solo es ejercicio, es un estilo de vida ✨ ¿Cómo puedo ayudarte hoy? Puedo ayudarte a agendar clases, resolver dudas sobre nuestros servicios y más."}, {"Q": "¿Puedo obtener un reembolso con orden médica?", "A": "Sí, como todas nuestras clases son realizadas por kinesiólogos, nuestras sesiones son reembolsables con orden médica. 📝 ¿Necesitas más información?"}, {"Q": "Hola, ayer fui a la clase de prueba y todo bien. ¿Cómo contrato algún plan?", "A": "¡Hola! Me alegro mucho que te hayan gustado nuestras clases y el estilo House of Spencer! 🙌 Solo debes bajar la app BoxMagic en tu celular o visitar https://auth.boxmagic.cl/. Ahí ingresas y compras un plan con alguno de nuestros profes de 10 o 20 sesiones. 🏋️‍♂️ ¿Puedo ayudarte con algo más?"}, {"Q": "Hola, ¿son solo clases o se puede ir a entrenar por mi cuenta?", "A": "¡Hola! 😊 Muchas gracias por escribir a House of Spencer. Tenemos clases guiadas semi-personalizadas y personalizadas. Por el momento no ofrecemos el servicio de Open-Gym. 🏋️‍♀️ ¿Te gustaría venir a una de nuestras clases de prueba gratuita? Agenda aquí: 📲 https://boxmagic.cl/sp/HouseofSpencer24"}, {"Q": "¿Necesito una orden médica para tomar sesiones de kinesiología con ustedes?", "A": "No necesitas una orden médica para entrenar con nosotros. 🚑 Como todas nuestras clases son realizadas por kinesiólogos, nuestras sesiones son reembolsables con orden médica. 📝 ¿Necesitas más información?"}, {"Q": "¿Qué tipo de centro es House of Spencer?", "A": "¡Hola! Gracias por contactarnos. 😊 Tenemos un espacio de entrenamiento en Providencia para ayudarte en tus objetivos. 🏋️‍♀️ Nuestra función es enseñar movimiento y mejorar tu biomecánica. De esta forma evitamos posibles lesiones y te ayudamos a conseguir tus objetivos alineando todos los componentes del fitness, entrenamiento y nutrición. 🍏💪"}, {"Q": "¿Quiénes son los profes que hacen clases AM?", "A": "¡Hola! Durante las mañanas nuestros profes son Nicolás Spencer, Vane Jenkin, Rolo Flores y Tomás Paulsen. 🔥 Recuerda que nuestros profes pueden modificar los horarios, pero en HOS siempre puedes contar con un profesional experto que estará disponible para ayudarte en tu camino del deporte y recuperación. 🏃‍♂️"}]
+[
+  {
+    "Q": "Hola, ¿cómo puedo agendar una clase de entrenamiento funcional?",
+    "A": "¡Hola! 💪 Puedes agendar tu clase a través de la app BoxMagic o en https://auth.boxmagic.cl/. Si no eres alumno, agenda tu clase de prueba gratuita en: 📲 https://boxmagic.cl/sp/HouseofSpencer24. ¿Necesitas ayuda con algo más?"
+  },
+  {
+    "Q": "¿Cuánto cuestan las sesiones?",
+    "A": "Ofrecemos 10 sesiones por $120.000 CLP y 20 sesiones por $220.000 CLP. 🏋️‍♀️ Los planes duran 2 meses. ¿Te gustaría más información?"
+  },
+  {
+    "Q": "¿Puedo cancelar una clase sin perderla?",
+    "A": "Sí, puedes cancelar tus clases hasta 12 horas antes sin perderlas. ⏰ ¿Necesitas ayuda con algo más?"
+  },
+  {
+    "Q": "¿Qué horarios de clases tienen disponibles?",
+    "A": "Tenemos clases de lunes a viernes en la mañana, mediodía y tarde, y los sábados en la mañana. 📅 ¿Te gustaría saber los horarios específicos?"
+  },
+  {
+    "Q": "Hola",
+    "A": "¡Hola! 😊 En House of Spencer te ayudamos a llegar al siguiente nivel y te acompañamos en todo tu proceso de recuperación ante lesiones o a ponerte en forma. 🏃‍♂️ ✨ No solo es ejercicio, es un estilo de vida ✨ ¿Cómo puedo ayudarte hoy? Puedo ayudarte a agendar clases, resolver dudas sobre nuestros servicios y más."
+  },
+  {
+    "Q": "¿Puedo obtener un reembolso con orden médica?",
+    "A": "Sí, como todas nuestras clases son realizadas por kinesiólogos, nuestras sesiones son reembolsables con orden médica. 📝 ¿Necesitas más información?"
+  },
+  {
+    "Q": "Hola, ayer fui a la clase de prueba y todo bien. ¿Cómo contrato algún plan?",
+    "A": "¡Hola! Me alegro mucho que te hayan gustado nuestras clases y el estilo House of Spencer! 🙌 Solo debes bajar la app BoxMagic en tu celular o visitar https://auth.boxmagic.cl/. Ahí ingresas y compras un plan con alguno de nuestros profes de 10 o 20 sesiones. 🏋️‍♂️ ¿Puedo ayudarte con algo más?"
+  },
+  {
+    "Q": "Hola, ¿son solo clases o se puede ir a entrenar por mi cuenta?",
+    "A": "¡Hola! 😊 Muchas gracias por escribir a House of Spencer. Tenemos clases guiadas semi-personalizadas y personalizadas. Por el momento no ofrecemos el servicio de Open-Gym. 🏋️‍♀️ ¿Te gustaría venir a una de nuestras clases de prueba gratuita? Agenda aquí: 📲 https://boxmagic.cl/sp/HouseofSpencer24"
+  },
+  {
+    "Q": "¿Necesito una orden médica para tomar sesiones de kinesiología con ustedes?",
+    "A": "No necesitas una orden médica para entrenar con nosotros. 🚑 Como todas nuestras clases son realizadas por kinesiólogos, nuestras sesiones son reembolsables con orden médica. 📝 ¿Necesitas más información?"
+  },
+  {
+    "Q": "¿Qué tipo de centro es House of Spencer?",
+    "A": "¡Hola! Gracias por contactarnos. 😊 Tenemos un espacio de entrenamiento en Providencia para ayudarte en tus objetivos. 🏋️‍♀️ Nuestra función es enseñar movimiento y mejorar tu biomecánica. De esta forma evitamos posibles lesiones y te ayudamos a conseguir tus objetivos alineando todos los componentes del fitness, entrenamiento y nutrición. 🍏💪"
+  },
+  {
+    "Q": "¿Quiénes son los profes que hacen clases AM?",
+    "A": "¡Hola! Durante las mañanas nuestros profes son Nicolás Spencer, Vane Jenkin, Rolo Flores y Tomás Paulsen. 🔥 Recuerda que nuestros profes pueden modificar los horarios, pero en HOS siempre puedes contar con un profesional experto que estará disponible para ayudarte en tu camino del deporte y recuperación. 🏃‍♂️"
+  },
+  {
+    "Q": "¿Quiénes son los profes que hacen clases PM?",
+    "A": "¡Hola! Durante las tardes nuestros profes son Nicolás Spencer, Vane Jenkin, Rolo Flores, Fabián Vega y Tomás Paulsen. 🔥 Recuerda que nuestros profes pueden modificar sus horarios y estos varían de acuerdo al día de la semana, pero en HOS siempre puedes contar con un profesional experto que estará disponible para ayudarte en tu camino del deporte y recuperación. 🏃‍♂️"
+  },
+  {
+    "Q": "¿Dónde puedo pagar para las clases de entrenamiento funcional?",
+    "A": "¡Hola! 💪 Para pagar y agendar tus clases de entrenamiento funcional, descarga la app BoxMagic o visita https://auth.boxmagic.cl/. 📲 Una vez registrada, busca nuestro centro y podrás gestionar tus clases fácilmente. ¿Necesitas ayuda con algo más?"
+  },
+  {
+    "Q": "¿Cómo me inscribo en las clases de entrenamiento funcional?",
+    "A": "¡Hola! Puedes inscribirte descargando la app BoxMagic en tu celular o visitando https://auth.boxmagic.cl/. 📲 Luego, busca nuestro centro y podrás agendar tus clases. 🏋️‍♀️ Si tienes alguna duda durante el proceso, estoy aquí para ayudarte."
+  },
+  {
+    "Q": "Quiero empezar a entrenar con ustedes, ¿cómo agendo una clase?",
+    "A": "¡Genial! 🎉 Agenda tu clase de prueba gratuita aquí: 📲 https://boxmagic.cl/sp/HouseofSpencer24. También puedes descargar la app BoxMagic o visitar https://auth.boxmagic.cl/ para agendar tus clases de entrenamiento funcional. 💪 Si necesitas más información, no dudes en preguntar."
+  },
+  {
+    "Q": "¿Cómo puedo pagar por un masaje o una consulta de nutrición?",
+    "A": "¡Hola! 😊 Para pagar por nuestros servicios de masajes o nutrición, visita nuestro enlace en AgendaPro: https://houseofspencer.site.agendapro.com/cl/sucursal/165852. Ahí podrás seleccionar el servicio y realizar el pago. 💳 ¿Puedo ayudarte con algo más?"
+  },
+  {
+    "Q": "Estoy interesado en sus servicios de nutrición, ¿dónde puedo agendar y pagar?",
+    "A": "¡Excelente! 🍎 Puedes agendar y pagar por nuestros servicios de nutrición a través de este enlace: https://houseofspencer.site.agendapro.com/cl/sucursal/165852. Si tienes alguna pregunta adicional, estoy aquí para ayudarte. 😊"
+  },
+  {
+    "Q": "¿Entregan un reporte por cada sesión para poder reembolsar a la Isapre?",
+    "A": "¡Hola! 😊 No entregamos un reporte por sesión, pero nuestra boleta de servicios puede te permite reembolsar. Cuentanos si necesitas detallar el tipo de sesiones realizadas para facilitar tu reembolso con la Isapre. Contactanos directamente a https://walink.co/83468b para poder ayudarte mejor 📝 ¿Te ayudo con algo más?"
+  },
+  {
+    "Q": "Hi, do you offer trial classes to get to know your services?",
+    "A": "Hi there! 😊 Absolutely! You can book your free trial class here: 📲 https://boxmagic.cl/sp/HouseofSpencer24. Let me know if you need any help!"
+  },
+  {
+    "Q": "How much do the classes cost?",
+    "A": "Hey! 💪 Our classes cost $120,000 CLP for 10 sessions and $220,000 CLP for 20 sessions. 🏋️‍♂️ The plans last for 2 months. Do you need more information?"
+  },
+  {
+    "Q": "Can I schedule classes through an app?",
+    "A": "Yes! 📲 You can schedule your classes using the BoxMagic app or by visiting https://auth.boxmagic.cl/. It\\'s quick and easy! Let me know if you need assistance."
+  },
+  {
+    "Q": "Do you have services in nutrition?",
+    "A": "Absolutely! 🍏 You can book our nutrition services here: https://houseofspencer.site.agendapro.com/cl/sucursal/165852. If you have any questions, feel free to ask!"
+  },
+  {
+    "Q": "Are your prices in US dollars?",
+    "A": "Our prices are in Chilean pesos (CLP). 💰 For example, 10 sessions cost $120,000 CLP. Let me know if you need more details!"
+  }
+]

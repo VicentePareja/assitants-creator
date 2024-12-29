@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
-from src.file_importer import GoogleDocReader
-from src.text_separator import TextSeparator
+from src.instructions_creation.file_importer import GoogleDocReader
+from src.instructions_creation.text_separator import TextSeparator
 from src.assistant_creator.assitant_creator import AssistantCreator
 from src.assitant_finetuner.examples_to_jsonl import TxtToJsonlConverter
 from src.assitant_finetuner.create_finetune_model import OpenAIFineTuner
@@ -133,11 +133,15 @@ class Main:
         self.create_fine_tune_model()
         self.create_fine_tune_assistant()
 
-    def run(self):
-        self.import_text_from_google_doc()
+    def create_assistants(self):
         self.create_without_examples_assistant()
         self.create_base_assistant()
         self.create_fine_tune_assitant_without_examples()
+
+    def run(self):
+        self.import_text_from_google_doc()
+        #self.create_assistants()
+        
     """ self.eval_models()
         self.create_and_send_final_report()"""
 

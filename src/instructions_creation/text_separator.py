@@ -69,19 +69,21 @@ class TextSeparator:
 
         # 3. Extract the JSON portion from the combined response
         actual_json_str = self._extract_json(combined_response)
+
         if not actual_json_str:
             print("No JSON object found in the response.")
             return
 
         # 4. Parse that JSON
         text_without_examples, only_examples = self._parse_json(actual_json_str)
+
         if text_without_examples is None and only_examples is None:
             # Means we failed to parse
             return
 
         # 5. Write the results to file
         self._write_results(text_without_examples, only_examples)
-        print(f"\nSaved JSON fields into {TEXT_WITHOUT_EXAMPLES_PATH} and {EXAMPLES_PATH}")
+        print(f"Saved JSON fields into '{TEXT_WITHOUT_EXAMPLES_PATH}' and '{EXAMPLES_PATH}'")
 
     ########################################################################
     # Internal helper methods (all OOP)
@@ -91,7 +93,8 @@ class TextSeparator:
         Reads the entire instructions file as a string.
         """
         with open(file_path, "r", encoding="utf-8") as f:
-            return f.read()
+            content = f.read()
+        return content
 
     def _ask_assistant(self, prompt: str) -> str:
         """
@@ -119,7 +122,6 @@ class TextSeparator:
 
             # Retrieve the full conversation (including final assistant message)
             response_message = self.client.beta.threads.messages.list(thread_id=thread.id)
-
             if not response_message or not response_message.data:
                 print("No response from assistant.")
                 return ""
@@ -145,24 +147,50 @@ class TextSeparator:
 
     def _extract_json(self, combined_response: str) -> str:
         """
-        Uses a regex to find the JSON portion embedded in combined_response.
-        Returns the raw JSON as a string or empty string if not found.
+        Extrae la porción JSON de la respuesta combinada usando un regex mejorado.
+        Sanitiza el contenido antes de retornarlo.
         """
-        regex_pattern = r"value='(\{.*\})'"  # Using capturing parentheses
+        # Regex para extraer la sección con value='...'
+        regex_pattern = r"value='(\{.*?\})'"
         match = re.search(regex_pattern, combined_response, re.DOTALL)
 
         if not match:
+            print("No JSON object found in the response (regex match failed).")
             return ""
 
-        # match.group(1) is the actual JSON portion
-        actual_json_str = match.group(1)
-        return actual_json_str
+        raw_json_str = match.group(1)
+
+
+        # Reemplazos para normalizar triple backslashes y secuencias
+        raw_json_str = raw_json_str.replace("\\\n", "\\n")
+        raw_json_str = raw_json_str.replace("\\\t", "\\t")
+
+
+        # 1) Cambiamos comillas “inteligentes” por simples
+        #    (para evitar caracteres raros dentro de cadenas JSON)
+        raw_json_str = raw_json_str.replace("‘", "'").replace("’", "'")
+
+        # 2) Convertimos \n y \t a literales de JSON
+        sanitized_json_str = raw_json_str.replace("\\n", "\\\\n").replace("\\t", "\\\\t")
+
+        # 3) Regex para backslashes sueltos que puedan generar escapes inválidos
+        #    En JSON válido, un backslash sólo puede preceder " b f n r t u \
+        #    Cualquier otra cosa produce "invalid \escape"
+        #    Este sub duplicará el backslash cuando no vaya seguido de
+        #    ["/\b\f\n\r\tu] o comillas
+        sanitized_json_str = re.sub(
+            r'\\(?=[^"\\/bfnrtu])',  # look for \ that isn't followed by a valid escape
+            r'\\\\',                # replace with double backslash
+            sanitized_json_str
+        )
+
+        return sanitized_json_str
 
     def _parse_json(self, json_str: str):
         """
-        Parses the given JSON string into Python objects and returns
-        (text_without_examples, only_examples).
+        Intenta parsear la cadena JSON dada. Si falla, reporta el error.
         """
+
         try:
             parsed_json = json.loads(json_str)
             text_without_examples = parsed_json.get("text_without_examples", "")
@@ -170,22 +198,19 @@ class TextSeparator:
             return text_without_examples, only_examples
 
         except json.JSONDecodeError as e:
-            print(f"Failed to parse JSON: {e}")
             return None, None
 
     def _write_results(self, text_without_examples: str, only_examples):
         """
         Writes the extracted strings to the specified output files.
         """
-        # Write to text_without_examples.txt
         with open(TEXT_WITHOUT_EXAMPLES_PATH, "w", encoding="utf-8") as f1:
             f1.write(text_without_examples)
 
-        # Write to examples file
         with open(EXAMPLES_PATH, "w", encoding="utf-8") as f2:
-            # If it's a list, we might want to json.dump it
             if isinstance(only_examples, list):
-                f2.write(json.dumps(only_examples, ensure_ascii=False))
+                f2.write(json.dumps(only_examples, ensure_ascii=False, indent=2))
+
             else:
                 f2.write(str(only_examples))
 
@@ -200,7 +225,6 @@ def main():
     openai_api_key = os.getenv('OPENAI_API_KEY')
     known_assistant_id = os.getenv("ID_ASSISTANT_TEXT_SEPARATOR")
 
-    # Instantiate our OOP class and run
     separator = TextSeparator(
         api_key=openai_api_key,
         assistant_id=known_assistant_id

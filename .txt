@@ -1,0 +1,24 @@
+A. ajustar implementación actual
+
+B. Ver qué onda con el evals de OPENAI si tiene API.
+
+C.
+Testeo "ordenado"
+
+1. Crear batería de test (Tentativo: usar ejemplos basales). Worst 4 y porcentaje de correctitud
+2. asistente evaluador (semantico ¿más contexto?) modelo mejor. Con instructions para contexto.
+3. Se compara todo en ambiente controlado y se guarda una calificaciones para cada asistente.
+
+
+
+Testeo "en la cancha":
+
+1. Extraer todas las veces que aparece una pregunta importante en las conversaciones reales.
+Nota: Cuidado con los tamaños de los archivos.
+
+2. Evaluar con un modelo avanzado la calidad de las respuestas. Y guardar esos datos.
+
+Data analitics:
+
+1. informe testeo ordenado
+2. informe en la cancha
