@@ -7,7 +7,7 @@ from src.assitant_finetuner.examples_to_jsonl import TxtToJsonlConverter
 from src.assitant_finetuner.create_finetune_model import OpenAIFineTuner
 from src.assitant_finetuner.upload_jsonl import OpenAIFileUploader
 from parametros import (INSTRUCTIONS_PATH, TEXT_WITHOUT_EXAMPLES_PATH, EXAMPLES_PATH,
-                        JSONL_EXAMPLES_PATH, NAME, BASE_MODEL)
+                        JSONL_EXAMPLES_PATH, NAME, BASE_MODEL, ID_ASSISTANTS_PATH)
 
 class DocumentImporter:
     def __init__(self, service_account_path: str, document_id: str, instructions_path: str):
@@ -63,6 +63,10 @@ class Main:
         )
         separator_runner.run()
 
+    def save_assistant_id(self, assistant_name, assistant_id: str):
+        with open(ID_ASSISTANTS_PATH, "a", encoding="utf-8") as f:
+            f.write(f"{assistant_name, assistant_id}\n")
+
     def create_jsonl_for_finetuning(self):
         txt_to_jsonl_converter = TxtToJsonlConverter(
             input_examples_txt_path=self.examples_path,
@@ -77,24 +81,24 @@ class Main:
             api_key=self.openai_api_key,
             instructions_path=self.intructions_without_examples_path
         )
-        assistant = assistant_creator.create_assistant(
+        self.without_examples_assistant = assistant_creator.create_assistant(
             name_suffix=" without examples",
             model=BASE_MODEL,
             tools=[{"type": "code_interpreter"}]
         )
-        print(f"Assistant without examples created")
+        self.save_assistant_id(self.without_examples_assistant.name, self.without_examples_assistant.id)
 
     def create_base_assistant(self):
         assistant_creator = AssistantCreator(
             api_key=self.openai_api_key,
             instructions_path=self.base_instructions_path
         )
-        assistant = assistant_creator.create_assistant(
+        self.base_assistant = assistant_creator.create_assistant(
             name_suffix=" base",
             model=BASE_MODEL,
             tools=[{"type": "code_interpreter"}]
         )
-        print(f"Base assistant created")
+        self.save_assistant_id(self.base_assistant.name, self.base_assistant.id)
 
 
     def upload_jsonl_to_openai(self):
@@ -120,12 +124,12 @@ class Main:
             api_key=self.openai_api_key,
             instructions_path=self.intructions_without_examples_path
         )
-        assistant = assistant_creator.create_assistant(
+        self.fine_tune_assistant = assistant_creator.create_assistant(
             name_suffix=" fine-tuned",
             model=self.fine_tune_model,
             tools=[{"type": "code_interpreter"}]
         )
-        print(f"Fine-tuned assistant created")
+        self.save_assistant_id(self.fine_tune_assistant.name, self.fine_tune_assistant.id)
 
     def create_fine_tune_assitant_without_examples(self):
         self.create_jsonl_for_finetuning()
@@ -139,8 +143,8 @@ class Main:
         self.create_fine_tune_assitant_without_examples()
 
     def run(self):
-        self.import_text_from_google_doc()
-        #self.create_assistants()
+        #self.import_text_from_google_doc()
+        self.create_assistants()
         
     """ self.eval_models()
         self.create_and_send_final_report()"""
