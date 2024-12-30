@@ -21,3 +21,5 @@ class AssistantCreator:
             tools=tools,
             model=model
         )
+
+        print("Assitant: ", name, " created successfully!")

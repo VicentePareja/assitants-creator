@@ -15,3 +15,7 @@ TEXT_WITHOUT_EXAMPLES_PATH = f'data/separate_examples_from_text/{NAME}text_witho
 EXAMPLES_PATH = f'data/separate_examples_from_text/{NAME}examples.txt'
 JSONL_EXAMPLES_PATH = f'data/separate_examples_from_text/{NAME}examples.jsonl'
 ID_ASSISTANTS_PATH = f'data/assistants_ids/{NAME}id_assistants.txt'
+BASE_TEST_EXAMPLES_PATH = f'data/test/{NAME}static_test_examples.txt'
+BASE_TEST_RESULTS_PATH = f'data/test/{NAME}static_test_results.csv'
+INTRUCTIONS_STATIC_EVALUATOR_PATH = f'data/evaluator/{NAME}static_evaluator_promt.txt'
+ID_STATIC_EVALUATOR_PATH = f'data/assistants_ids/{NAME}id_static_evaluator.txt'

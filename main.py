@@ -6,8 +6,13 @@ from src.assistant_creator.assitant_creator import AssistantCreator
 from src.assitant_finetuner.examples_to_jsonl import TxtToJsonlConverter
 from src.assitant_finetuner.create_finetune_model import OpenAIFineTuner
 from src.assitant_finetuner.upload_jsonl import OpenAIFileUploader
+from src.assistant_testing.static_test_creator import StaticExamplesTestCreator
+from src.assistant_testing.static_assistant_tester import StaticAssistantsRunner
+
+
 from parametros import (INSTRUCTIONS_PATH, TEXT_WITHOUT_EXAMPLES_PATH, EXAMPLES_PATH,
-                        JSONL_EXAMPLES_PATH, NAME, BASE_MODEL, ID_ASSISTANTS_PATH)
+                        JSONL_EXAMPLES_PATH, NAME, BASE_MODEL, ID_ASSISTANTS_PATH, BASE_TEST_EXAMPLES_PATH,
+                        BASE_TEST_RESULTS_PATH, INTRUCTIONS_STATIC_EVALUATOR_PATH, ID_STATIC_EVALUATOR_PATH)
 
 class DocumentImporter:
     def __init__(self, service_account_path: str, document_id: str, instructions_path: str):
@@ -38,16 +43,26 @@ class Main:
         self.service_account_path = os.getenv("SERVICE_ACCOUNT_FILE")
         self.document_id = os.getenv("DOCUMENT_ID")
         self.name = NAME
+        self.assistant_id_path = ID_ASSISTANTS_PATH
         self.base_instructions_path = INSTRUCTIONS_PATH
         self.intructions_without_examples_path = TEXT_WITHOUT_EXAMPLES_PATH
         self.examples_path = EXAMPLES_PATH
         self.jsonl_examples_path = JSONL_EXAMPLES_PATH
         self.promt_path = TEXT_WITHOUT_EXAMPLES_PATH
+        self.base_test_results_path = BASE_TEST_RESULTS_PATH
+        self.static_evaluator_promt_path = INTRUCTIONS_STATIC_EVALUATOR_PATH
+        self.static_evaluator_id_path = ID_STATIC_EVALUATOR_PATH
 
         self.openai_api_key = os.getenv('OPENAI_API_KEY')
         self.assistant_id = os.getenv('ID_ASSISTANT_TEXT_SEPARATOR')
 
         self.fine_tuner = OpenAIFineTuner(api_key=self.openai_api_key)
+        self.static_test_creator = StaticExamplesTestCreator(input_test_file=EXAMPLES_PATH, 
+                                                          output_test_file=BASE_TEST_EXAMPLES_PATH)
+        self.static_assistant_runner = StaticAssistantsRunner(openai_api_key=self.openai_api_key, 
+                                                          txt_file_path=self.assistant_id_path, 
+                                                          csv_file_path=BASE_TEST_EXAMPLES_PATH, 
+                                                          output_csv_path=self.base_test_results_path)
 
     def import_text_from_google_doc(self):
         importer = DocumentImporter(
@@ -63,8 +78,8 @@ class Main:
         )
         separator_runner.run()
 
-    def save_assistant_id(self, assistant_name, assistant_id: str):
-        with open(ID_ASSISTANTS_PATH, "a", encoding="utf-8") as f:
+    def save_assistant_id(self, assistant_name, assistant_id: str, path):
+        with open(self.assistant_id_path, "a", encoding="utf-8") as f:
             f.write(f"{assistant_name, assistant_id}\n")
 
     def create_jsonl_for_finetuning(self):
@@ -137,17 +152,44 @@ class Main:
         self.create_fine_tune_model()
         self.create_fine_tune_assistant()
 
+    def create_static_tests(self):
+        self.static_test_creator.create_test()
+
+    def generate_static_test_answers(self):
+        self.static_assistant_runner.run_all()
+
+    def create_static_evaluator_assistant(self):
+        assistant_creator = AssistantCreator(
+            api_key=self.openai_api_key,
+            instructions_path=self.static_evaluator_promt_path
+        )
+        self.evaluator_assistant = assistant_creator.create_assistant(
+            name_suffix="static evaluator",
+            model=BASE_MODEL,
+            tools=[{"type": "code_interpreter"}]
+        )
+        with open(self.static_evaluator_id_path, "a", encoding="utf-8") as f:
+            f.write(f"{self.evaluator_assistant.name, self.evaluator_assistant.id}\n")
+
+    def grade_static_tests(self):
+        pass
+
     def create_assistants(self):
         self.create_without_examples_assistant()
         self.create_base_assistant()
         self.create_fine_tune_assitant_without_examples()
 
+    def eval_models(self):
+        #self.create_static_tests()
+        #self.generate_static_test_answers()
+        #self.create_static_evaluator_assistant()
+        self.grade_static_tests()
+
     def run(self):
         #self.import_text_from_google_doc()
-        self.create_assistants()
-        
-    """ self.eval_models()
-        self.create_and_send_final_report()"""
+        #self.create_assistants() 
+        self.eval_models()
+    """    self.create_and_send_final_report()"""
 
 
 if __name__ == "__main__":
