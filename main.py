@@ -191,55 +191,51 @@ class Main:
         
         self.static_evaluator.run(question_column="question", human_answer_column="human_answer", 
                                   machine_answer_column="HOS  fine-tuned", output_csv_path='data/evaluator/static_results_fine-tuned.csv')
-        
-    def generate_unified_csv_results(self):
 
-        """        Crea un archivo CSV unificado que incluye:
+    def generate_unified_csv_results(self):
+        """
+        Crea un archivo CSV unificado que incluye:
             - Todas las columnas del CSV base (self.base_test_results_path).
-            - Tres columnas adicionales, con los 'grade' de cada archivo:
-                grade_without_examples
-                grade_base
-                grade_fine_tuned
-            Se asume que 'question' es la columna que identifica cada fila en común"""
+            - Tres columnas adicionales: 
+                grade_without_examples, grade_base, grade_fine_tuned
+            - Se asume que la posición (index) de la fila en el CSV de 'grade'
+            corresponde a la misma en el CSV base. 
+        """
 
         # 1) Leemos el CSV base en memoria
-        main_rows = []
         if not os.path.exists(self.base_test_results_path):
             print(f"No existe el archivo base en: {self.base_test_results_path}")
             return
-        
+
+        main_rows = []
         with open(self.base_test_results_path, 'r', encoding='utf-8') as f_base:
             reader = csv.DictReader(f_base)
             for row in reader:
                 main_rows.append(row)
-        
+
         if not main_rows:
             print(f"El archivo base {self.base_test_results_path} está vacío.")
             return
-        
-        # 2) Leemos los 3 archivos donde guardaste 'grade', usando un helper
-        #    que retorne un diccionario { question_val : grade_val }.
-        def read_grades_to_dict(csv_path, question_col='question', grade_col='grade'):
-            grades_dict = {}
+
+        # 2) Helper para leer un CSV de una sola columna "grade" como lista
+        def read_grades_as_list(csv_path, grade_col='grade'):
+            grades_list = []
             if not os.path.exists(csv_path):
                 print(f"El archivo {csv_path} no existe.")
-                return grades_dict  # diccionario vacío
+                return grades_list  # lista vacía
             with open(csv_path, 'r', encoding='utf-8') as f_in:
                 reader = csv.DictReader(f_in)
                 for row in reader:
-                    # Ajusta la lógica si tu 'question' está en otra columna
-                    q_val = row.get(question_col, "").strip()
                     g_val = row.get(grade_col, "").strip()
-                    if q_val:
-                        grades_dict[q_val] = g_val
-            return grades_dict
+                    grades_list.append(g_val)
+            return grades_list
 
-        # 3) Construimos los 3 diccionarios a partir de los CSV con 1 sola columna "grade"
-        grades_no_examples = read_grades_to_dict('data/evaluator/static_results_without_examples.csv')
-        grades_base        = read_grades_to_dict('data/evaluator/static_results_base.csv')
-        grades_fine_tuned  = read_grades_to_dict('data/evaluator/static_results_fine-tuned.csv')
+        # 3) Construimos las tres listas de 'grade'
+        grades_no_examples = read_grades_as_list('data/evaluator/static_results_without_examples.csv')
+        grades_base        = read_grades_as_list('data/evaluator/static_results_base.csv')
+        grades_fine_tuned  = read_grades_as_list('data/evaluator/static_results_fine-tuned.csv')
 
-        # 4) Definimos el nombre de las nuevas columnas y el CSV unificado.
+        # 4) Definimos el nombre de las nuevas columnas y el CSV unificado
         output_file_unified = 'data/evaluator/unified_results.csv'
         new_columns = [
             "grade_without_examples",
@@ -247,26 +243,34 @@ class Main:
             "grade_fine_tuned"
         ]
 
-        # Las columnas originales + las 3 nuevas
         fieldnames = list(main_rows[0].keys()) + new_columns
 
-        # 5) Unimos todo en un solo CSV
+        # 5) Escribimos el CSV unificado
         with open(output_file_unified, 'w', newline='', encoding='utf-8') as f_out:
             writer = csv.DictWriter(f_out, fieldnames=fieldnames)
             writer.writeheader()
 
-            # Recorremos cada fila del CSV base y completamos las 3 nuevas columnas
-            for row in main_rows:
-                question_val = row.get('question', "").strip()
+            # Chequeo de tamaños (opcional)
+            num_base_rows = len(main_rows)
+            if not (
+                len(grades_no_examples) == num_base_rows and
+                len(grades_base) == num_base_rows and
+                len(grades_fine_tuned) == num_base_rows
+            ):
+                print("Advertencia: El número de filas en los CSV de 'grade' no coincide con el base.")
+                print(f"Base: {num_base_rows}, no_examples: {len(grades_no_examples)}, "
+                    f"base: {len(grades_base)}, fine_tuned: {len(grades_fine_tuned)}")
 
-                row["grade_without_examples"] = grades_no_examples.get(question_val, "")
-                row["grade_base"]            = grades_base.get(question_val, "")
-                row["grade_fine_tuned"]      = grades_fine_tuned.get(question_val, "")
+            # Unificamos fila por fila usando la posición (i)
+            for i, row in enumerate(main_rows):
+                # Verificamos que i no exceda la cantidad de filas en la lista 
+                row["grade_without_examples"] = grades_no_examples[i] if i < len(grades_no_examples) else ""
+                row["grade_base"]            = grades_base[i]        if i < len(grades_base) else ""
+                row["grade_fine_tuned"]      = grades_fine_tuned[i]  if i < len(grades_fine_tuned) else ""
 
                 writer.writerow(row)
 
         print(f"Archivo unificado creado en: {output_file_unified}")
-
 
     def create_assistants(self):
         self.create_without_examples_assistant()
@@ -274,15 +278,15 @@ class Main:
         self.create_fine_tune_assitant_without_examples()
 
     def eval_models(self):
-        self.create_static_tests()
-        self.generate_static_test_answers()
-        self.create_static_evaluator_assistant()
-        self.grade_static_tests()
+        #self.create_static_tests()
+        #self.generate_static_test_answers()
+        #self.create_static_evaluator_assistant()
+        #self.grade_static_tests()
         self.generate_unified_csv_results()
 
     def run(self):
-        self.import_text_from_google_doc()
-        self.create_assistants() 
+        #self.import_text_from_google_doc()
+        #self.create_assistants() 
         self.eval_models()
 
 
