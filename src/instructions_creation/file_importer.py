@@ -46,22 +46,15 @@ class GoogleDocReader:
         )
         return text
 
-if __name__ == '__main__':
-    # Load environment variables
-    load_dotenv()
+class DocumentImporter:
+    def __init__(self, service_account_path: str, document_id: str, instructions_path: str):
+        self.service_account_path = service_account_path
+        self.document_id = document_id
+        self.instructions_path = instructions_path
 
-    SERVICE_ACCOUNT_FILE = os.getenv("SERVICE_ACCOUNT_FILE")
-    DOCUMENT_ID = os.getenv("DOCUMENT_ID")
-
-    # Instantiate the GoogleDocReader class
-    reader = GoogleDocReader(SERVICE_ACCOUNT_FILE, DOCUMENT_ID)
-
-    # Fetch the document text
-    doc_text = reader.fetch_text()
-
-    # Save the document text to a .txt file
-
-    with open(INSTRUCTIONS_PATH, "w", encoding="utf-8") as file:
-        file.write(doc_text)
-
-    print(f"Document text saved to {INSTRUCTIONS_PATH}")
+    def import_text(self):
+        reader = GoogleDocReader(self.service_account_path, self.document_id)
+        doc_text = reader.fetch_text()
+        with open(self.instructions_path, "w", encoding="utf-8") as f:
+            f.write(doc_text)
+        print(f"Document text saved to {self.instructions_path}")

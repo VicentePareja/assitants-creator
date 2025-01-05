@@ -215,22 +215,11 @@ class TextSeparator:
                 f2.write(str(only_examples))
 
 
-################################################################################
-# The main entrypoint (just calls the OOP class).
-################################################################################
-def main():
-    load_dotenv()
+class TextSeparatorRunner:
+    def __init__(self, api_key: str, assistant_id: str):
+        self.api_key = api_key
+        self.assistant_id = assistant_id
 
-    # Grab your secrets from the environment
-    openai_api_key = os.getenv('OPENAI_API_KEY')
-    known_assistant_id = os.getenv("ID_ASSISTANT_TEXT_SEPARATOR")
-
-    separator = TextSeparator(
-        api_key=openai_api_key,
-        assistant_id=known_assistant_id
-    )
-    separator.run()
-
-
-if __name__ == "__main__":
-    main()
+    def run(self):
+        separator = TextSeparator(api_key=self.api_key, assistant_id=self.assistant_id)
+        separator.run()

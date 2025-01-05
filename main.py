@@ -1,8 +1,8 @@
 import os
 import csv
 from dotenv import load_dotenv
-from src.instructions_creation.file_importer import GoogleDocReader
-from src.instructions_creation.text_separator import TextSeparator
+from src.instructions_creation.file_importer import DocumentImporter
+from src.instructions_creation.text_separator import TextSeparatorRunner
 from src.assistant_creator.assitant_creator import AssistantCreator
 from src.assitant_finetuner.examples_to_jsonl import TxtToJsonlConverter
 from src.assitant_finetuner.create_finetune_model import OpenAIFineTuner
@@ -16,28 +16,6 @@ from parametros import (INSTRUCTIONS_PATH, TEXT_WITHOUT_EXAMPLES_PATH, EXAMPLES_
                         JSONL_EXAMPLES_PATH, NAME, BASE_MODEL, ID_ASSISTANTS_PATH, BASE_TEST_EXAMPLES_PATH,
                         BASE_TEST_RESULTS_PATH, INTRUCTIONS_STATIC_EVALUATOR_PATH, ID_STATIC_EVALUATOR_PATH, 
                         CSV_STATIC_RESULTS_PATH)
-
-class DocumentImporter:
-    def __init__(self, service_account_path: str, document_id: str, instructions_path: str):
-        self.service_account_path = service_account_path
-        self.document_id = document_id
-        self.instructions_path = instructions_path
-
-    def import_text(self):
-        reader = GoogleDocReader(self.service_account_path, self.document_id)
-        doc_text = reader.fetch_text()
-        with open(self.instructions_path, "w", encoding="utf-8") as f:
-            f.write(doc_text)
-        print(f"Document text saved to {self.instructions_path}")
-
-class TextSeparatorRunner:
-    def __init__(self, api_key: str, assistant_id: str):
-        self.api_key = api_key
-        self.assistant_id = assistant_id
-
-    def run(self):
-        separator = TextSeparator(api_key=self.api_key, assistant_id=self.assistant_id)
-        separator.run()
 
 class Main:
     def __init__(self):
@@ -101,7 +79,7 @@ class Main:
             instructions_path=self.intructions_without_examples_path
         )
         self.without_examples_assistant = assistant_creator.create_assistant(
-            name_suffix=" without examples",
+            name_suffix="without examples",
             model=BASE_MODEL,
             tools=[{"type": "code_interpreter"}]
         )
@@ -113,7 +91,7 @@ class Main:
             instructions_path=self.base_instructions_path
         )
         self.base_assistant = assistant_creator.create_assistant(
-            name_suffix=" base",
+            name_suffix="base",
             model=BASE_MODEL,
             tools=[{"type": "code_interpreter"}]
         )
@@ -144,7 +122,7 @@ class Main:
             instructions_path=self.intructions_without_examples_path
         )
         self.fine_tune_assistant = assistant_creator.create_assistant(
-            name_suffix=" fine-tuned",
+            name_suffix="fine-tuned",
             model=self.fine_tune_model,
             tools=[{"type": "code_interpreter"}]
         )
@@ -278,15 +256,15 @@ class Main:
         self.create_fine_tune_assitant_without_examples()
 
     def eval_models(self):
-        #self.create_static_tests()
-        #self.generate_static_test_answers()
-        #self.create_static_evaluator_assistant()
-        #self.grade_static_tests()
+        self.create_static_tests()
+        self.generate_static_test_answers()
+        self.create_static_evaluator_assistant()
+        self.grade_static_tests()
         self.generate_unified_csv_results()
 
     def run(self):
-        #self.import_text_from_google_doc()
-        #self.create_assistants() 
+        self.import_text_from_google_doc()
+        self.create_assistants() 
         self.eval_models()
 
 

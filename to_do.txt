@@ -41,3 +41,15 @@ Reu 30/12
 -Reporte.
 -Automatizar evals.
 -W&B
+
+
+--------------------
+Reu 2/1/2025
+
+-corregir graficos reporte.
+-Agregar modelo ejemplos y fine tuning
+agregar casos buenos y malos en reporte. 
+- poner en los gráficos las medias.
+- apikey de airtable: ids a partir de nombre
+- generalizarlo: nombre de empresa y que salga un reporte.
+- refactorar.
