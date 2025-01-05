@@ -1,5 +1,3 @@
-import os
-from dotenv import load_dotenv
 from openai import OpenAI
 from parametros import NAME
 
@@ -12,14 +10,15 @@ class AssistantCreator:
         with open(self.instructions_path, 'r', encoding='utf-8') as file:
             return file.read()
 
-    def create_assistant(self, name_suffix: str, model: str, tools: list):
+    def create_assistant(self, name_suffix: str, model: str, tools: list, temperature = float, max_tokens = int, top_p = float):
         instructions = self.load_instructions()
-        name = f"{NAME} {name_suffix}"
+        name = f"{NAME}_{name_suffix}"
+        print(f"Creating assistant with name: {name}")
         return self.client.beta.assistants.create(
             name=name,
             instructions=instructions,
             tools=tools,
-            model=model
+            model=model,
+            temperature=temperature,
+            top_p=top_p
         )
-
-        print("Assitant: ", name, " created successfully!")

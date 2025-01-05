@@ -72,6 +72,10 @@
     "A": "¡Hola! 😊 No entregamos un reporte por sesión, pero nuestra boleta de servicios puede te permite reembolsar. Cuentanos si necesitas detallar el tipo de sesiones realizadas para facilitar tu reembolso con la Isapre. Contactanos directamente a https://walink.co/83468b para poder ayudarte mejor 📝 ¿Te ayudo con algo más?"
   },
   {
+    "Q": "¿Consulta y a todas las personas de la clase se les hace los mismos ejercicios? O cómo funcionan??",
+    "A": "Todos nuestros profes son kinesiólogos 💪, por lo que podemos adaptar las rutinas a la realidad de cada uno."
+  },
+  {
     "Q": "Hi, do you offer trial classes to get to know your services?",
     "A": "Hi there! 😊 Absolutely! You can book your free trial class here: 📲 https://boxmagic.cl/sp/HouseofSpencer24. Let me know if you need any help!"
   },

@@ -3,10 +3,11 @@ import csv
 from dotenv import load_dotenv
 from src.instructions_creation.file_importer import DocumentImporter
 from src.instructions_creation.text_separator import TextSeparatorRunner
-from src.assistant_creator.assitant_creator import AssistantCreator
-from src.assitant_finetuner.examples_to_jsonl import TxtToJsonlConverter
-from src.assitant_finetuner.create_finetune_model import OpenAIFineTuner
-from src.assitant_finetuner.upload_jsonl import OpenAIFileUploader
+from src.instructions_creation.intructions_id_finder import AssistantDocFinder
+from src.assistant_creator.assistant_creator import AssistantCreator
+from src.assistant_finetuner.examples_to_jsonl import TxtToJsonlConverter
+from src.assistant_finetuner.create_finetune_model import OpenAIFineTuner
+from src.assistant_finetuner.upload_jsonl import OpenAIFileUploader
 from src.assistant_testing.static_test_creator import StaticExamplesTestCreator
 from src.assistant_testing.static_assistant_tester import StaticAssistantsRunner
 from src.assistant_testing.static_grader_results import FileManagerGrader
@@ -15,14 +16,16 @@ from src.assistant_testing.static_grader_results import FileManagerGrader
 from parametros import (INSTRUCTIONS_PATH, TEXT_WITHOUT_EXAMPLES_PATH, EXAMPLES_PATH,
                         JSONL_EXAMPLES_PATH, NAME, BASE_MODEL, ID_ASSISTANTS_PATH, BASE_TEST_EXAMPLES_PATH,
                         BASE_TEST_RESULTS_PATH, INTRUCTIONS_STATIC_EVALUATOR_PATH, ID_STATIC_EVALUATOR_PATH, 
-                        CSV_STATIC_RESULTS_PATH)
+                        CSV_STATIC_RESULTS_PATH, TEMPERATURE, TOP_P, N_EPOCHS, EVAL_MODEL, EVAL_TEMPERATURE,
+                        EVAL_TOP_P, FINE_TUNED_MODEL_WITHOUT_EXAMPLES_SUFIX, FINE_TUNED_MODEL_WITH_EXAMPLES_SUFIX,
+                        BASE_MODEL_SUFIX, WITHOUT_EXAMPLES_MODEL_SUFIX
+)
 
 class Main:
     def __init__(self):
         load_dotenv()
 
-        self.service_account_path = os.getenv("SERVICE_ACCOUNT_FILE")
-        self.document_id = os.getenv("DOCUMENT_ID")
+        
         self.name = NAME
         self.assistant_id_path = ID_ASSISTANTS_PATH
         self.base_instructions_path = INSTRUCTIONS_PATH
@@ -34,7 +37,14 @@ class Main:
         self.static_evaluator_promt_path = INTRUCTIONS_STATIC_EVALUATOR_PATH
         self.static_evaluator_id_path = ID_STATIC_EVALUATOR_PATH
         self.static_results_path = CSV_STATIC_RESULTS_PATH
+        self.temperature = TEMPERATURE
+        self.top_p = TOP_P
+        self.n_epochs = N_EPOCHS
+        self.eval_model = EVAL_MODEL
+        self.eval_temperature = EVAL_TEMPERATURE
+        self.eval_top_p = EVAL_TOP_P
 
+        self.service_account_path = os.getenv("SERVICE_ACCOUNT_FILE")
         self.openai_api_key = os.getenv('OPENAI_API_KEY')
         self.assistant_id = os.getenv('ID_ASSISTANT_TEXT_SEPARATOR')
 
@@ -46,6 +56,13 @@ class Main:
                                                           csv_file_path=BASE_TEST_EXAMPLES_PATH, 
                                                           output_csv_path=self.base_test_results_path)
 
+    def find_doc_id(self, assistant_name):
+        finder = AssistantDocFinder()
+        assistant_id, gdocs_address = finder.get_doc_id_by_assistant_name(assistant_name)
+        self.document_id = gdocs_address
+
+        print(f"document with assistant's instructions found")
+
     def import_text_from_google_doc(self):
         importer = DocumentImporter(
             self.service_account_path,
@@ -53,6 +70,8 @@ class Main:
             self.base_instructions_path
         )
         importer.import_text()
+
+    def separate_text(self):
 
         separator_runner = TextSeparatorRunner(
             api_key=self.openai_api_key,
@@ -79,11 +98,15 @@ class Main:
             instructions_path=self.intructions_without_examples_path
         )
         self.without_examples_assistant = assistant_creator.create_assistant(
-            name_suffix="without examples",
+            name_suffix=WITHOUT_EXAMPLES_MODEL_SUFIX,
             model=BASE_MODEL,
-            tools=[{"type": "code_interpreter"}]
+            tools=[],
+            temperature=self.temperature,
+            top_p=self.top_p
         )
-        self.save_assistant_id(self.without_examples_assistant.name, self.without_examples_assistant.id)
+        self.save_assistant_id(self.without_examples_assistant.name,
+                                self.without_examples_assistant.id,
+                                self.assistant_id_path)
 
     def create_base_assistant(self):
         assistant_creator = AssistantCreator(
@@ -91,18 +114,22 @@ class Main:
             instructions_path=self.base_instructions_path
         )
         self.base_assistant = assistant_creator.create_assistant(
-            name_suffix="base",
+            name_suffix=BASE_MODEL_SUFIX,
             model=BASE_MODEL,
-            tools=[{"type": "code_interpreter"}]
+            tools=[],
+            temperature=self.temperature,
+            top_p=self.top_p
         )
-        self.save_assistant_id(self.base_assistant.name, self.base_assistant.id)
+        self.save_assistant_id(self.base_assistant.name,
+                               self.base_assistant.id,
+                               self.assistant_id_path)
 
 
     def upload_jsonl_to_openai(self):
         uploader = OpenAIFileUploader(api_key=self.openai_api_key)
         response = uploader.upload_file(
             file_path=self.jsonl_examples_path,
-            purpose="fine-tune"
+            purpose="fine-tune and test new models."
         )
         print("Jsonl file uploaded successfully!")
         self.fine_tune_file_id = response.id
@@ -116,23 +143,42 @@ class Main:
         fine_tune_job_id = response.id
         self.fine_tune_model = self.fine_tuner.monitor_fine_tuning_job(fine_tune_job_id)
 
-    def create_fine_tune_assistant(self):
+    def create_fine_tune_assistant_without_examples(self):
         assistant_creator = AssistantCreator(
             api_key=self.openai_api_key,
             instructions_path=self.intructions_without_examples_path
         )
-        self.fine_tune_assistant = assistant_creator.create_assistant(
-            name_suffix="fine-tuned",
+        self.fine_tune_assistant_without_examples = assistant_creator.create_assistant(
+            name_suffix=FINE_TUNED_MODEL_WITHOUT_EXAMPLES_SUFIX,
             model=self.fine_tune_model,
-            tools=[{"type": "code_interpreter"}]
+            tools=[],
+            temperature=self.temperature,
+            top_p=self.top_p
         )
-        self.save_assistant_id(self.fine_tune_assistant.name, self.fine_tune_assistant.id)
+        self.save_assistant_id(self.fine_tune_assistant_without_examples.name,
+                               self.fine_tune_assistant_without_examples.id,
+                               self.assistant_id_path)
 
-    def create_fine_tune_assitant_without_examples(self):
+    def create_fine_tune_assistant_with_examples(self):
+        assistant_creator = AssistantCreator(
+            api_key=self.openai_api_key,
+            instructions_path=self.base_instructions_path
+        )
+        self.fine_tune_assistant_with_examples = assistant_creator.create_assistant(
+            name_suffix=FINE_TUNED_MODEL_WITH_EXAMPLES_SUFIX,
+            model=self.fine_tune_model,
+            tools=[],
+            temperature=self.temperature,
+            top_p=self.top_p
+        )
+        self.save_assistant_id(self.fine_tune_assistant_with_examples.name,
+                               self.fine_tune_assistant_with_examples.id,
+                               self.assistant_id_path)
+
+    def prepare_fine_tune_assistants(self):
         self.create_jsonl_for_finetuning()
         self.upload_jsonl_to_openai()
         self.create_fine_tune_model()
-        self.create_fine_tune_assistant()
 
     def create_static_tests(self):
         self.static_test_creator.create_test()
@@ -250,10 +296,17 @@ class Main:
 
         print(f"Archivo unificado creado en: {output_file_unified}")
 
+    def create_instructions(self):
+        self.find_doc_id(self.name)
+        self.import_text_from_google_doc()
+        self.separate_text()
+
     def create_assistants(self):
         self.create_without_examples_assistant()
         self.create_base_assistant()
-        self.create_fine_tune_assitant_without_examples()
+        self.prepare_fine_tune_assistants()
+        self.create_fine_tune_assistant_without_examples()
+        self.create_fine_tune_assistant_with_examples()
 
     def eval_models(self):
         self.create_static_tests()
@@ -263,10 +316,9 @@ class Main:
         self.generate_unified_csv_results()
 
     def run(self):
-        self.import_text_from_google_doc()
-        self.create_assistants() 
+        #self.create_instructions()
+        #self.create_assistants() 
         self.eval_models()
-
 
 if __name__ == "__main__":
     main_app = Main()

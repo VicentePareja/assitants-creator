@@ -2,7 +2,6 @@
 from googleapiclient.discovery import build
 from google.oauth2.service_account import Credentials
 from dotenv import load_dotenv
-from parametros import INSTRUCTIONS_PATH
 import os
 import sys
 

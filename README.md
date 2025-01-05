@@ -102,6 +102,36 @@ ASSISTANTS-CREATOR/
    ID_ASSISTANT_TEXT_SEPARATOR=<assistant_id>
    ```
 
+### Google Services Setup
+
+To enable Google Docs access for the project:
+
+1. **Enable Google Docs API**:
+   - Go to the [Google Cloud Console](https://console.cloud.google.com/).
+   - Navigate to **APIs & Services** > **Library**.
+   - Search for **Google Docs API**.
+   - Click **Enable**.
+
+2. **Create a Service Account**:
+   - Navigate to **IAM & Admin** > **Service Accounts**.
+   - Click **Create Service Account**.
+   - Enter a name (e.g., "AssistantCreator Service Account") and click **Create and Continue**.
+   - Assign the **Editor** role to the service account.
+   - Click **Done**.
+
+3. **Generate Service Account Credentials**:
+   - In the **Service Accounts** section, find your service account.
+   - Click on the service account and go to the **Keys** tab.
+   - Click **Add Key** > **Create New Key**.
+   - Choose **JSON** and download the key file.
+   - Save the file in your project directory and update the `SERVICE_ACCOUNT_FILE` path in your `.env` file.
+
+4. **Share Google Document with Service Account**:
+   - Open the Google Document you want to use.
+   - Click **Share** in the top-right corner.
+   - Add the service account email (e.g., `your-service-account@your-project.iam.gserviceaccount.com`) as a Viewer or Editor.
+   - Save the changes.
+
 ## Usage
 
 1. **Run the Main Script**:
@@ -147,9 +177,6 @@ Defined in `parametros.py`:
 
 2. **Supporting More Models**:
    - Modify `parametros.py` to include new model configurations.
-
-3. **Custom Grading Logic**:
-   - Enhance `FileManagerGrader` with new grading criteria.
 
 ## Contributing
 1. Fork the repository.
