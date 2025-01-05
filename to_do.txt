@@ -54,3 +54,6 @@ agregar casos buenos y malos en reporte.
 - generalizarlo: nombre de empresa y que salga un reporte.
 - refactorar.
 - agregar Temperatur y top p
+
+
+- evaluator promt path a docs?

@@ -1,5 +1,6 @@
 import os
 import csv
+import re
 from dotenv import load_dotenv
 from src.instructions_creation.file_importer import DocumentImporter
 from src.instructions_creation.text_separator import TextSeparatorRunner
@@ -13,13 +14,17 @@ from src.assistant_testing.static_assistant_tester import StaticAssistantsRunner
 from src.assistant_testing.static_grader_results import FileManagerGrader
 
 
+
 from parametros import (INSTRUCTIONS_PATH, TEXT_WITHOUT_EXAMPLES_PATH, EXAMPLES_PATH,
                         JSONL_EXAMPLES_PATH, NAME, BASE_MODEL, ID_ASSISTANTS_PATH, BASE_TEST_EXAMPLES_PATH,
                         BASE_TEST_RESULTS_PATH, INTRUCTIONS_STATIC_EVALUATOR_PATH, ID_STATIC_EVALUATOR_PATH, 
                         CSV_STATIC_RESULTS_PATH, TEMPERATURE, TOP_P, N_EPOCHS, EVAL_MODEL, EVAL_TEMPERATURE,
                         EVAL_TOP_P, FINE_TUNED_MODEL_WITHOUT_EXAMPLES_SUFIX, FINE_TUNED_MODEL_WITH_EXAMPLES_SUFIX,
-                        BASE_MODEL_SUFIX, WITHOUT_EXAMPLES_MODEL_SUFIX, EVAL_STATIC_MODEL_NAME, FINE_TUNE_MODEL_SUFIX
-)
+                        BASE_MODEL_SUFIX, WITHOUT_EXAMPLES_MODEL_SUFIX, EVAL_STATIC_MODEL_NAME, 
+                        FINE_TUNE_MODEL_SUFIX, QUESTION_COLUMN, HUMAN_RESPONSE_COLUMN, 
+                        RESPONSES_STATIC_EVALS_PATH_PREFIX, UNIFIED_STATIC_RESULTS_PATH)
+                        
+
 
 class Main:
     def __init__(self):
@@ -80,7 +85,7 @@ class Main:
         separator_runner.run()
 
     def save_assistant_id(self, assistant_name, assistant_id: str, path):
-        with open(self.assistant_id_path, "a", encoding="utf-8") as f:
+        with open(path, "a", encoding="utf-8") as f:
             f.write(f"{assistant_name, assistant_id}\n")
 
     def create_jsonl_for_finetuning(self):
@@ -194,27 +199,44 @@ class Main:
         self.evaluator_assistant = assistant_creator.create_assistant(
             name_suffix=EVAL_STATIC_MODEL_NAME,
             model=EVAL_MODEL,
-            tools=[{"type": "code_interpreter"}]
+            tools=[], 
+            temperature=EVAL_TEMPERATURE,
+            top_p=EVAL_TOP_P
         )
-        with open(self.static_evaluator_id_path, "a", encoding="utf-8") as f:
-            f.write(f"{self.evaluator_assistant.name, self.evaluator_assistant.id}\n")
+        self.save_assistant_id(self.evaluator_assistant.name,
+                               self.evaluator_assistant.id,
+                               self.static_evaluator_id_path)
 
     def grade_static_tests(self):
 
-        evaluator_id = "asst_yZVY7g4Pyj8ALkwL3bO1SoYk"    
+        pattern = re.compile(r"\('([^']+)',\s*'([^']+)'\)")
+        with open(self.static_evaluator_id_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                match = pattern.match(line)
+                if match:
+                    evaluator_id = match.group(2)
+                    break
 
         self.static_evaluator = FileManagerGrader(openai_api_key=self.openai_api_key,
                                                   assistant_id=evaluator_id,
                                                   csv_input_path=self.base_test_results_path)
         
-        self.static_evaluator.run(question_column="question", human_answer_column="human_answer", 
-                                  machine_answer_column="HOS  without examples", output_csv_path='data/evaluator/static_results_without_examples.csv')
+        self.static_evaluator.run(question_column= QUESTION_COLUMN, human_answer_column=HUMAN_RESPONSE_COLUMN, 
+                                  machine_answer_column=f"{NAME}_{WITHOUT_EXAMPLES_MODEL_SUFIX}",
+                                  output_csv_path=f'{RESPONSES_STATIC_EVALS_PATH_PREFIX}{WITHOUT_EXAMPLES_MODEL_SUFIX}.csv')
         
-        self.static_evaluator.run(question_column="question", human_answer_column="human_answer", 
-                                  machine_answer_column="HOS  base", output_csv_path='data/evaluator/static_results_base.csv')
+        self.static_evaluator.run(question_column=QUESTION_COLUMN, human_answer_column=HUMAN_RESPONSE_COLUMN, 
+                                  machine_answer_column=f"{NAME}_{BASE_MODEL_SUFIX}",
+                                  output_csv_path=f'{RESPONSES_STATIC_EVALS_PATH_PREFIX}{BASE_MODEL_SUFIX}.csv')
         
-        self.static_evaluator.run(question_column="question", human_answer_column="human_answer", 
-                                  machine_answer_column="HOS  fine-tuned", output_csv_path='data/evaluator/static_results_fine-tuned.csv')
+        self.static_evaluator.run(question_column=QUESTION_COLUMN, human_answer_column=HUMAN_RESPONSE_COLUMN, 
+                                  machine_answer_column=f"{NAME}_{FINE_TUNED_MODEL_WITH_EXAMPLES_SUFIX}",
+                                  output_csv_path=f'{RESPONSES_STATIC_EVALS_PATH_PREFIX}{FINE_TUNED_MODEL_WITH_EXAMPLES_SUFIX}.csv')
+        
+        self.static_evaluator.run(question_column=QUESTION_COLUMN, human_answer_column=HUMAN_RESPONSE_COLUMN, 
+                                  machine_answer_column=f"{NAME}_{FINE_TUNED_MODEL_WITHOUT_EXAMPLES_SUFIX}",
+                                  output_csv_path=f'{RESPONSES_STATIC_EVALS_PATH_PREFIX}{FINE_TUNED_MODEL_WITHOUT_EXAMPLES_SUFIX}.csv')
 
     def generate_unified_csv_results(self):
         """
@@ -255,17 +277,16 @@ class Main:
             return grades_list
 
         # 3) Construimos las tres listas de 'grade'
-        grades_no_examples = read_grades_as_list('data/evaluator/static_results_without_examples.csv')
-        grades_base        = read_grades_as_list('data/evaluator/static_results_base.csv')
-        grades_fine_tuned  = read_grades_as_list('data/evaluator/static_results_fine-tuned.csv')
+        grades_no_examples = read_grades_as_list(f'{RESPONSES_STATIC_EVALS_PATH_PREFIX}{WITHOUT_EXAMPLES_MODEL_SUFIX}.csv')
+        grades_base = read_grades_as_list(f'{RESPONSES_STATIC_EVALS_PATH_PREFIX}{BASE_MODEL_SUFIX}.csv')
+        grades_fine_tuned_without_examples = read_grades_as_list(f'{RESPONSES_STATIC_EVALS_PATH_PREFIX}{FINE_TUNED_MODEL_WITHOUT_EXAMPLES_SUFIX}.csv')
+        grades_fine_tuned_with_examples = read_grades_as_list(f'{RESPONSES_STATIC_EVALS_PATH_PREFIX}{FINE_TUNED_MODEL_WITH_EXAMPLES_SUFIX}.csv')
+
 
         # 4) Definimos el nombre de las nuevas columnas y el CSV unificado
-        output_file_unified = 'data/evaluator/unified_results.csv'
-        new_columns = [
-            "grade_without_examples",
-            "grade_base",
-            "grade_fine_tuned"
-        ]
+        output_file_unified = UNIFIED_STATIC_RESULTS_PATH
+        new_columns = [f"grade_{WITHOUT_EXAMPLES_MODEL_SUFIX}", f"grade_{BASE_MODEL_SUFIX}",
+                       f"grade_{FINE_TUNED_MODEL_WITHOUT_EXAMPLES_SUFIX}", f"grade_{FINE_TUNED_MODEL_WITH_EXAMPLES_SUFIX}"]
 
         fieldnames = list(main_rows[0].keys()) + new_columns
 
@@ -279,18 +300,19 @@ class Main:
             if not (
                 len(grades_no_examples) == num_base_rows and
                 len(grades_base) == num_base_rows and
-                len(grades_fine_tuned) == num_base_rows
+                len(grades_fine_tuned_without_examples) == num_base_rows and
+                len(grades_fine_tuned_with_examples) == num_base_rows
             ):
                 print("Advertencia: El número de filas en los CSV de 'grade' no coincide con el base.")
-                print(f"Base: {num_base_rows}, no_examples: {len(grades_no_examples)}, "
-                    f"base: {len(grades_base)}, fine_tuned: {len(grades_fine_tuned)}")
+                print(f"Base: {num_base_rows}, No ejemplos: {len(grades_no_examples)}, Base: {len(grades_base)}, Fine-tuned sin ejemplos: {len(grades_fine_tuned_without_examples)}, Fine-tuned con ejemplos: {len(grades_fine_tuned_with_examples)}")
 
             # Unificamos fila por fila usando la posición (i)
             for i, row in enumerate(main_rows):
                 # Verificamos que i no exceda la cantidad de filas en la lista 
-                row["grade_without_examples"] = grades_no_examples[i] if i < len(grades_no_examples) else ""
-                row["grade_base"]            = grades_base[i]        if i < len(grades_base) else ""
-                row["grade_fine_tuned"]      = grades_fine_tuned[i]  if i < len(grades_fine_tuned) else ""
+                row[f"grade_{WITHOUT_EXAMPLES_MODEL_SUFIX}"] = grades_no_examples[i] if i < len(grades_no_examples) else ""
+                row[f"grade_{BASE_MODEL_SUFIX}"] = grades_base[i] if i < len(grades_base) else ""
+                row[f"grade_{FINE_TUNED_MODEL_WITHOUT_EXAMPLES_SUFIX}"] = grades_fine_tuned_without_examples[i] if i < len(grades_fine_tuned_without_examples) else ""
+                row[f"grade_{FINE_TUNED_MODEL_WITH_EXAMPLES_SUFIX}"] = grades_fine_tuned_with_examples[i] if i < len(grades_fine_tuned_with_examples) else ""
 
                 writer.writerow(row)
 
@@ -316,8 +338,8 @@ class Main:
         self.generate_unified_csv_results()
 
     def run(self):
-        #self.create_instructions()
-        #self.create_assistants() 
+        self.create_instructions()
+        self.create_assistants() 
         self.eval_models()
 
 if __name__ == "__main__":
