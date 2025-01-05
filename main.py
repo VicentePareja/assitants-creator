@@ -18,7 +18,7 @@ from parametros import (INSTRUCTIONS_PATH, TEXT_WITHOUT_EXAMPLES_PATH, EXAMPLES_
                         BASE_TEST_RESULTS_PATH, INTRUCTIONS_STATIC_EVALUATOR_PATH, ID_STATIC_EVALUATOR_PATH, 
                         CSV_STATIC_RESULTS_PATH, TEMPERATURE, TOP_P, N_EPOCHS, EVAL_MODEL, EVAL_TEMPERATURE,
                         EVAL_TOP_P, FINE_TUNED_MODEL_WITHOUT_EXAMPLES_SUFIX, FINE_TUNED_MODEL_WITH_EXAMPLES_SUFIX,
-                        BASE_MODEL_SUFIX, WITHOUT_EXAMPLES_MODEL_SUFIX
+                        BASE_MODEL_SUFIX, WITHOUT_EXAMPLES_MODEL_SUFIX, EVAL_STATIC_MODEL_NAME, FINE_TUNE_MODEL_SUFIX
 )
 
 class Main:
@@ -138,7 +138,7 @@ class Main:
         response = self.fine_tuner.create_fine_tuning_job(
             training_file_id=self.fine_tune_file_id,
             model=BASE_MODEL,
-            suffix=f"{NAME}fine-tuned"
+            suffix=f"{NAME}_{FINE_TUNE_MODEL_SUFIX}"
         )
         fine_tune_job_id = response.id
         self.fine_tune_model = self.fine_tuner.monitor_fine_tuning_job(fine_tune_job_id)
@@ -192,8 +192,8 @@ class Main:
             instructions_path=self.static_evaluator_promt_path
         )
         self.evaluator_assistant = assistant_creator.create_assistant(
-            name_suffix="static evaluator",
-            model=BASE_MODEL,
+            name_suffix=EVAL_STATIC_MODEL_NAME,
+            model=EVAL_MODEL,
             tools=[{"type": "code_interpreter"}]
         )
         with open(self.static_evaluator_id_path, "a", encoding="utf-8") as f:

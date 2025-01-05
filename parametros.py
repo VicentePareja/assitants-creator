@@ -7,7 +7,7 @@ BASE_MODEL_SUFIX = f"base"
 WITHOUT_EXAMPLES_MODEL_SUFIX = f"without_examples"
 
 
-# base model for the assistants
+# base parametres for the assistants
 BASE_MODEL = "gpt-4o-mini-2024-07-18"
 TEMPERATURE = 0.5
 TOP_P = 1
@@ -15,11 +15,13 @@ TOP_P = 1
 
 # Finetunning model
 N_EPOCHS = 1
+FINE_TUNE_MODEL_SUFIX = f"fine-tuned"
 
-# evaluator model
+# evaluator assistant
 EVAL_MODEL = "gpt-4o-mini-2024-07-18"
 EVAL_TEMPERATURE = 0
 EVAL_TOP_P = 0.5
+EVAL_STATIC_MODEL_NAME = "static evaluator"
 
 QUESTION_COLUMN = "question"
 HUMAN_RESPONSE_COLUMN = "human_response"
