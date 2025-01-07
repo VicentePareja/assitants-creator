@@ -18,7 +18,7 @@ from src.assistant_testing.static_grader_results import FileManagerGrader
 from parametros import (INSTRUCTIONS_PATH, TEXT_WITHOUT_EXAMPLES_PATH, EXAMPLES_PATH,
                         JSONL_EXAMPLES_PATH, NAME, BASE_MODEL, ID_ASSISTANTS_PATH, BASE_TEST_EXAMPLES_PATH,
                         BASE_TEST_RESULTS_PATH, INTRUCTIONS_STATIC_EVALUATOR_PATH, ID_STATIC_EVALUATOR_PATH, 
-                        CSV_STATIC_RESULTS_PATH, TEMPERATURE, TOP_P, N_EPOCHS, EVAL_MODEL, EVAL_TEMPERATURE,
+                        CSV_STATIC_RESULTS_PATH, TEMPERATURE, TOP_P, EVAL_MODEL, EVAL_TEMPERATURE,
                         EVAL_TOP_P, FINE_TUNED_MODEL_WITHOUT_EXAMPLES_SUFIX, FINE_TUNED_MODEL_WITH_EXAMPLES_SUFIX,
                         BASE_MODEL_SUFIX, WITHOUT_EXAMPLES_MODEL_SUFIX, EVAL_STATIC_MODEL_NAME, 
                         FINE_TUNE_MODEL_SUFIX, QUESTION_COLUMN, HUMAN_RESPONSE_COLUMN, 
@@ -44,7 +44,6 @@ class Main:
         self.static_results_path = CSV_STATIC_RESULTS_PATH
         self.temperature = TEMPERATURE
         self.top_p = TOP_P
-        self.n_epochs = N_EPOCHS
         self.eval_model = EVAL_MODEL
         self.eval_temperature = EVAL_TEMPERATURE
         self.eval_top_p = EVAL_TOP_P

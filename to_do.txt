@@ -57,3 +57,11 @@ agregar casos buenos y malos en reporte.
 
 
 - evaluator promt path a docs?
+
+
+Reu 06/01/2025
+
+Evaluador que de explicaciones
+Si una pregunta sale varias veces, no queremos verla varias veces.
+Mejorar modelo evaluador.
+Sacar los datos directamente del asistente.

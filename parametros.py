@@ -14,7 +14,7 @@ TOP_P = 1
 
 
 # Finetunning model
-N_EPOCHS = 1
+# N_EPOCHS = 1
 FINE_TUNE_MODEL_SUFIX = f"fine-tuned"
 
 # evaluator assistant
